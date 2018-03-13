@@ -54,7 +54,7 @@ from seahub.views.modules import MOD_PERSONAL_WIKI, enable_mod_for_user, \
 import seahub.settings as settings
 from seahub.settings import AVATAR_FILE_STORAGE, ENABLE_STORAGE_CLASSES, \
     ENABLE_SUB_LIBRARY, ENABLE_FOLDER_PERM, ENABLE_REPO_SNAPSHOT_LABEL, \
-    UNREAD_NOTIFICATIONS_REQUEST_INTERVAL
+    UNREAD_NOTIFICATIONS_REQUEST_INTERVAL, STORAGE_CLASS_MAPPING_POLICY
 
 LIBRARY_TEMPLATES = getattr(settings, 'LIBRARY_TEMPLATES', {})
 
@@ -734,7 +734,8 @@ def libraries(request):
             joined_groups = []
 
     storages = []
-    if is_pro_version() and ENABLE_STORAGE_CLASSES:
+    if is_pro_version() and ENABLE_STORAGE_CLASSES and \
+            STORAGE_CLASS_MAPPING_POLICY != 'REPO_ID_MAPPING':
         storages = get_library_storages(request)
 
     return render_to_response('libraries.html', {
@@ -758,7 +759,8 @@ def libraries(request):
             'can_add_pub_repo': can_add_pub_repo,
             'joined_groups': joined_groups,
             'storages': storages,
-            'enable_storage_classes': ENABLE_STORAGE_CLASSES,
+            'enable_storage_classes': ENABLE_STORAGE_CLASSES and \
+                    STORAGE_CLASS_MAPPING_POLICY != 'REPO_ID_MAPPING',
             'unread_notifications_request_interval': UNREAD_NOTIFICATIONS_REQUEST_INTERVAL,
             'library_templates': LIBRARY_TEMPLATES.keys() if \
                     isinstance(LIBRARY_TEMPLATES, dict) else [],

@@ -94,7 +94,7 @@ if HAS_OFFICE_CONVERTER:
 import seahub.settings as settings
 from seahub.settings import THUMBNAIL_EXTENSION, THUMBNAIL_ROOT, \
     FILE_LOCK_EXPIRATION_DAYS, ENABLE_STORAGE_CLASSES, \
-    ENABLE_THUMBNAIL, ENABLE_FOLDER_PERM
+    ENABLE_THUMBNAIL, ENABLE_FOLDER_PERM, STORAGE_CLASS_MAPPING_POLICY
 try:
     from seahub.settings import CLOUD_MODE
 except ImportError:
@@ -507,7 +507,8 @@ def repo_download_info(request, repo_id, gen_sync_token=True):
         'head_commit_id': repo.head_cmmt_id,
         }
 
-    if is_pro_version() and ENABLE_STORAGE_CLASSES:
+    if is_pro_version() and ENABLE_STORAGE_CLASSES and \
+            STORAGE_CLASS_MAPPING_POLICY != 'REPO_ID_MAPPING':
         info_json['storage_name'] = repo.storage_name
 
     return Response(info_json)
@@ -589,7 +590,8 @@ class Repos(APIView):
                     "version": r.version,
                 }
 
-                if is_pro_version() and ENABLE_STORAGE_CLASSES:
+                if is_pro_version() and ENABLE_STORAGE_CLASSES and \
+                        STORAGE_CLASS_MAPPING_POLICY != 'REPO_ID_MAPPING':
                     repo['storage_name'] = r.storage_name
                     repo['storage_id'] = r.storage_id
 
@@ -815,7 +817,8 @@ class Repos(APIView):
             repo_id = seafile_api.create_org_repo(repo_name,
                     repo_desc, username, passwd, org_id)
         else:
-            if is_pro_version() and ENABLE_STORAGE_CLASSES:
+            if is_pro_version() and ENABLE_STORAGE_CLASSES and \
+                    STORAGE_CLASS_MAPPING_POLICY != 'REPO_ID_MAPPING':
 
                 storages = get_library_storages(request)
                 storage_id = request.data.get("storage_id", None)
@@ -933,7 +936,8 @@ class PubRepos(APIView):
             seaserv.seafserv_threaded_rpc.set_org_inner_pub_repo(
                 org_id, repo.id, permission)
         else:
-            if is_pro_version() and ENABLE_STORAGE_CLASSES:
+            if is_pro_version() and ENABLE_STORAGE_CLASSES and \
+                    STORAGE_CLASS_MAPPING_POLICY != 'REPO_ID_MAPPING':
 
                 storages = get_library_storages(request)
                 storage_id = request.data.get("storage_id", None)
@@ -4146,7 +4150,8 @@ class GroupRepos(APIView):
             seafile_api.add_org_group_repo(repo_id, org_id, group.id,
                                            username, permission)
         else:
-            if is_pro_version() and ENABLE_STORAGE_CLASSES:
+            if is_pro_version() and ENABLE_STORAGE_CLASSES and \
+                    STORAGE_CLASS_MAPPING_POLICY != 'REPO_ID_MAPPING':
 
                 storages = get_library_storages(request)
                 storage_id = request.data.get("storage_id", None)
